@@ -6,7 +6,7 @@ DON'T TELL ME THAT THE MOD IS MADE TERRIBLY.
 IF YOU NOTICE ERRORS IN THE GAME ETC. REPORT TO ME ON THE DISCORD CHANNEL, THANKS FOR UNDERSTANDING.
 
 LINK TO THE DISCORD CHANNEL - There is no server yet, sorry.
-THE LINK CAN ALSO BE FOUND ON THE SITE.
+THE LINK CAN ALSO BE FOUND ON THE SITE thunderstore.io
 ---
 !!!
 ---
@@ -16,7 +16,7 @@ THE LINK CAN ALSO BE FOUND ON THE SITE.
 ЕСЛИ ЗАМЕТИТЕ ОШИБКИ В ИГРЕ И Т.Д. СООБЩИТЕ МНЕ НА ДИСКОРД КАНАЛЕ, СПАСИБО ЗА ПОНИМАНИЕ
 
 ССЫЛКА НА КАНАЛ ДИСКОРД - пока что сервера нету, извините.
-ССЫЛКУ МОЖНО НАЙТИ ТАК ЖЕ НА САЙТЕ.
+ССЫЛКУ МОЖНО НАЙТИ ТАК ЖЕ НА САЙТЕ thunderstore.io
 ---
 # **Custom Horn Mod for Lethal Company**  
 **Replace the Load Horn sound with your own audio files!**  
