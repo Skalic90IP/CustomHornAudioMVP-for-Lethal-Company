@@ -1,0 +1,116 @@
+using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
+using UnityEngine;
+using System.IO;
+using System.Collections.Generic;
+using NAudio.Wave; // Для поддержки MP3/OGG
+
+[assembly: System.Reflection.AssemblyVersion("1.0.0")]
+namespace CustomHornMod
+{
+    [BepInPlugin("com.yourname.customhorn", "Custom Horn Mod", "1.0.0")]
+    public class Plugin : BaseUnityPlugin
+    {
+        public static ManualLogSource Log;
+        private static List<AudioClip> sounds = new List<AudioClip>();
+        private static int currentIndex = 0;
+        private static AudioSource activeSource;
+        private static string currentSoundName = "None";
+        private static ConfigEntry<bool> showUI;
+        private static ConfigEntry<float> volume;
+
+        private void Awake()
+        {
+            Log = Logger;
+            showUI = Config.Bind("UI", "ShowUI", true, "Show sound name on screen");
+            volume = Config.Bind("Audio", "Volume", 1.0f, "Volume level (0.1 to 1.0)");
+
+            string soundsDir = Path.Combine(Paths.ConfigPath, "CustomHornSounds");
+            Directory.CreateDirectory(soundsDir);
+            LoadSounds(soundsDir);
+
+            Logger.LogInfo($"Loaded {sounds.Count} sounds.");
+            if (sounds.Count > 0) currentSoundName = sounds[0].name;
+
+            // Хук на оригинальный звук (замени SomeGameClass и PlayHornSound)
+            On.SomeGameClass.PlayHornSound += (orig, self) =>
+            {
+                if (sounds.Count == 0 || (activeSource != null && activeSource.isPlaying)) return;
+                PlayCurrentSound(self.transform.position);
+            };
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.LeftArrow)) SwitchSound(-1);
+            if (Input.GetKeyDown(KeyCode.RightArrow)) SwitchSound(1);
+        }
+
+        private void SwitchSound(int dir)
+        {
+            if (sounds.Count == 0) return;
+            currentIndex = (currentIndex + dir + sounds.Count) % sounds.Count;
+            currentSoundName = sounds[currentIndex].name;
+            Logger.LogInfo($"Selected: {currentSoundName}");
+        }
+
+        private void PlayCurrentSound(Vector3 position)
+        {
+            activeSource = gameObject.AddComponent<AudioSource>();
+            activeSource.clip = sounds[currentIndex];
+            activeSource.volume = volume.Value;
+            activeSource.Play();
+            Destroy(activeSource, activeSource.clip.length + 0.1f);
+        }
+
+        private void LoadSounds(string dir)
+        {
+            foreach (string file in Directory.GetFiles(dir))
+            {
+                string ext = Path.GetExtension(file).ToLower();
+                if (ext != ".wav" && ext != ".ogg" && ext != ".mp3") continue;
+
+                try
+                {
+                    AudioClip clip;
+                    if (ext == ".wav") clip = LoadWav(file);
+                    else clip = LoadMp3OrOgg(file); // Для MP3/OGG используем NAudio
+                    
+                    clip.name = Path.GetFileNameWithoutExtension(file);
+                    sounds.Add(clip);
+                }
+                catch (System.Exception e)
+                {
+                    Logger.LogError($"Failed to load {file}: {e.Message}");
+                }
+            }
+        }
+
+        private AudioClip LoadWav(string path)
+        {
+            using (var reader = new WaveFileReader(path))
+            {
+                var buffer = new byte[reader.Length];
+                reader.Read(buffer, 0, buffer.Length);
+                float[] samples = ConvertByteToFloat(buffer);
+                AudioClip clip = AudioClip.Create("LoadedWav", samples.Length / 2, 2, 44100, false);
+                clip.SetData(samples, 0);
+                return clip;
+            }
+        }
+
+        private AudioClip LoadMp3OrOgg(string path)
+        {
+            // Аналогично через NAudio (код упрощён)
+            return null; // Заглушка
+        }
+
+        private void OnGUI()
+        {
+            if (!showUI.Value || sounds.Count == 0) return;
+            GUI.Label(new Rect(10, 10, 300, 25), $"Sound: {currentSoundName}");
+            GUI.Label(new Rect(10, 35, 300, 25), "Press ←/→ to switch");
+        }
+    }
+}

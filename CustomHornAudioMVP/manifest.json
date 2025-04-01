@@ -1,0 +1,13 @@
+{
+  "name": "CustomHornMod",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/Skalic90IP/CustomHornAudioMVP-for-Lethal-Company",
+  "description": "Replace Load Horn sounds with custom WAV/MP3/OGG files.",
+  "dependencies": [
+    "BepInEx-BepInExPack_Lethal_Company-5.4.2100",
+    "NAudio-NAudio-2.2.1"
+  ],
+  "authors": ["Sello90IP"],
+  "loaders": ["bepinex"],
+  "icon": "icon.png"
+}
